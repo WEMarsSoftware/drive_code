@@ -1,0 +1,60 @@
+// CommunicationStuff.hh
+
+#ifndef COMMUNICATION_SETUP
+#define COMMUNICATION_SETUP
+
+#include "Arduino.h"
+#include <WiFi.h>
+#include "ESPAsyncWebServer.h"
+
+// INFO FOR LOCAL ROUTER
+char* ssid = "WE MARS Rover";
+const char* password = "westillfirst";
+
+// COMMUNICATION CONSTANTS
+AsyncWebServer server(80);
+IPAddress staticIP(192,168,1,16);
+IPAddress gateway(10,10,10,1);
+IPAddress subnet(255,255,255,0);
+
+int motorShutdown = 0;
+
+void inline connectToWiFi()
+{
+  // Set WiFi to station mode and disconnect from an AP if it was previously connected
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
+    delay(100);
+
+    // ensure our IP is 10.10.10.10
+    WiFi.config(staticIP, gateway, subnet);
+    
+    delay(100);
+  
+    // WiFi.scanNetworks will return the number of networks found
+    int n = WiFi.scanNetworks();
+  
+
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.println("Connecting to WiFi..");
+    }
+
+  Serial.println("CONNECTED TO " + String(ssid));
+  Serial.println(WiFi.localIP());
+}
+
+void inline setupESPServer()
+{
+  /**
+   * HTTP callback
+   */
+   server.on("", HTTP_GET, [](AsyncWebServerRequest *request){
+      // TODO
+   });
+ 
+  server.begin();
+}
+
+#endif
