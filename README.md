@@ -1,10 +1,12 @@
 # drive_code
 Somewhat effective rover control code written for an ESP-32 micro-controller.
 
-# Dependencies - these should be installed in ~/Document/Arduino/libraries
-arduino-esp32 core header files
-ESPAsyncWebServer library
-Built-in Arduino headers
+# Dependencies
+ - arduino-esp32 core header files
+ - ESPAsyncWebServer library
+ - Built-in Arduino headers
+
+ - Note: these should be installed in ~/Document/Arduino/libraries
 
 # src.ino
 Main controller code for this project.
