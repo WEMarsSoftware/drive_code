@@ -1,6 +1,9 @@
 #include "Arduino.h"
 #include "esp32-hal-ledc.h"
 
+#ifndef ELECTRICAL_HH
+#define ELECTRICAL_HH
+
 const int PERCENTAGE_0 = 0;
 const int PERCENTAGE_100 = 100;
 
@@ -75,8 +78,4 @@ void moveMotors(int left, int right){
 	}
 }
 
-
-
-
-
-
+#endif

@@ -55,12 +55,7 @@ void inline connectToWiFi()
 }
 
 void inline setupESPServer()
-{
-  // TESTING
-  int channels[] = {8};
-  moveMotors(channels, motorVoltages, 1);
-    
-    
+{    
   /**
    * HTTP callback with paramaters
    * Will be expecting <IP>/?left-side=#&right-side=#

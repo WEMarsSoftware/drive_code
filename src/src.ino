@@ -45,14 +45,4 @@ void setup()
   setupESPServer();
 }
 
-void loop() { /* Intentionally empty. Required for Asynchronous Web Server. */
-   for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++) {
-    ledcWrite(ledChannel, dutyCycle);
-    delay(7);
-  }
- 
-  for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--) {
-    ledcWrite(ledChannel, dutyCycle);
-    delay(7);
-  }
-}
+void loop() { /* Intentionally empty. Required for Asynchronous Web Server. */ }
