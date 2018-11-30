@@ -13,18 +13,20 @@
 
 
 /**
- * MOTOR LAYOUT [1 -> 1 mapping of array indices]
- * 0 -- 3
- *   ||
- * 1 -- 4
- *   ||
- * 2 -- 5
+ ESP-32 Pinout:
+
+ https://www.google.ca/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwizra7am_zeAhXDlAKHZG_B10QjRx6BAgBEAU&url=https%3A%2F%2Frandomnerdtutorials.com%2Fesp32-pinout-reference-gpios%2F&psig=AOvVaw1LJ9p4gsN-us7aVcxR9u-y&ust=1543670720325832
+ *
  */
 const int LEFT_DRIVE_CHANNELS[] = {1, 2, 3};
 const int RIGHT_DRIVE_CHANNELS[] = {4, 5, 6};
 
-const int LEFT_DRIVE_PINS[] = {20, 21, 22};
-const int RIGHT_DRIVE_PINS[] = {24, 25, 26};
+// on left hand side of board
+const int LEFT_DRIVE_PINS[] = {32, 33, 25};
+
+// on right hand side of board
+const int RIGHT_DRIVE_PINS[] = {4, 2, 15};
+
 const int NUM_MOTORS_PER_SIDE = 3;
 
 void setup()
