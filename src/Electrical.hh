@@ -10,7 +10,8 @@ const int PERCENTAGE_100 = 100;
 const int MIN_PWM_OUT = 0;
 const int MAX_PWM_OUT = 255;
 
-const int VICTOR_PWM_IN_FREQUENCY = 400;
+//const int VICTOR_PWM_IN_FREQUENCY = 400;
+const int VICTOR_PWM_IN_FREQUENCY = 5000;
 const int DEFAULT_BIT_RESOLUTION = 8;
 
 int leftDriveTrain[] = {-1, -1, -1};
@@ -35,25 +36,16 @@ void setup(int pin, int channel, int freq=VICTOR_PWM_IN_FREQUENCY, int bits=DEFA
  * Attach channels to LEFT or RIGHT drivetrains.
  * This will just overwrite the -1 defaults.
  *
- * @param left - 1 for left drivetrain, 0 for right
+ * @param pin - 0, 1, 2 for left drive train and 3, 4, 5 for right drive train
  * @param channel - channel to set to left or right
  */ 
-void setDriveChannel(int left, int channel) {
-	if (left) {
-		for (int i = 0; i < MOTORS_PER_SIDE; i++) {
-			if (leftDriveTrain[i] != -1) {
-				leftDriveTrain[i] = channel;
-				return;
-			}
-		}
-	} else {
-		for (int i = 0; i < MOTORS_PER_SIDE; i++) {
-			if (rightDriveTrain[i] != -1) {
-				rightDriveTrain[i] = channel;
-				return;
-			}
-		}
-	}
+void setDriveChannel(unsigned int pin, int channel) {
+ if (pin <= 2) {
+  leftDriveTrain[pin] = channel;
+ }
+ else if (pin <= 5) {
+  rightDriveTrain[5-pin] = channel;
+ }
 }
 
 /**
@@ -68,14 +60,36 @@ void setDriveChannel(int left, int channel) {
  * Voltages given to ledcWrite should be mapped between 0 and 255
  */ 
 void moveMotors(int left, int right){
-	// (value, fromLow, fromHigh, toLow, toHigh)
-	map(left, PERCENTAGE_0, PERCENTAGE_100, MIN_PWM_OUT, MAX_PWM_OUT);
-	map(right, PERCENTAGE_0, PERCENTAGE_100, MIN_PWM_OUT, MAX_PWM_OUT);
+  // Serial.println("MOVING MOTORS");
 
+  
+	// (value, fromLow, fromHigh, toLow, toHigh)
+	left = map(left, PERCENTAGE_0, PERCENTAGE_100, MIN_PWM_OUT, MAX_PWM_OUT);
+	right = map(right, PERCENTAGE_0, PERCENTAGE_100, MIN_PWM_OUT, MAX_PWM_OUT);
+ 
+  // Serial.println(left);
+  // Serial.println(right);
+  
 	for (int i = 0; i < MOTORS_PER_SIDE; i++) {
 		ledcWrite(leftDriveTrain[i], left);
 		ledcWrite(rightDriveTrain[i], right);
+   /* Serial.println("Left Channel " + leftDriveTrain[i]);
+    Serial.println("Value: " + left);
+    Serial.println("Right Channel " + rightDriveTrain[i]);
+    Serial.println("Value: " + right); */
 	}
+
+/*
+ * Uncomment if we want to auto turn off motors every second
+ * This would be safe regardless of receiving the next ping
+ * 
+ * delay(1000);
+ * for (int i = 0; i < MOTORS_PER_SIDE; i++) {
+ *   ledcWrite(leftDriveTrain[i], 0);
+ *   ledcWrite(rightDriveTrain[i], 0);
+ * }
+*/
+
 }
 
 #endif

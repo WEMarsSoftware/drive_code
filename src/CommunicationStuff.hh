@@ -52,6 +52,7 @@ void inline connectToWiFi()
 
   Serial.println("CONNECTED TO " + String(ssid));
   Serial.println(WiFi.localIP());
+  Serial.println(WiFi.macAddress());
 }
 
 void inline setupESPServer()
@@ -66,11 +67,11 @@ void inline setupESPServer()
       
       int numParams = request->params();
       String left, right;
-       
+      // Serial.println("PARAM CALLBACK");
       for ( int i = 0; i < numParams; i++ ) {
         AsyncWebParameter* p = request->getParam(i);
         String name = p->name();
-       
+        // Serial.println("Param " + name);
         if (name == motorParams[0]) {
             left = p->value();
         } else if (name == motorParams[1]) {
@@ -80,13 +81,21 @@ void inline setupESPServer()
        
        // if all went well, we now have the two power percentage values
        // use our Electrical API
+      //  Serial.print("Calling move motors with params " + left);
+       // Serial.println(" " + right);
        moveMotors(left.toInt(), right.toInt());
        
        
        // send success
        request->send(200, "text/plain", "SUCCESS");
    });
- 
+
+  /* Test callback -> test connection without affecting motors */
+  server.on("/hello", HTTP_GET, [](AsyncWebServerRequest *request){ 
+       // send success
+       request->send(200, "text/plain", "SUCCESS");
+   });
+   
   server.begin();
 }
 

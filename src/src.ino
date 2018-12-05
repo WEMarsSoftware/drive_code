@@ -38,11 +38,17 @@ void setup()
     setup(LEFT_DRIVE_PINS[i], LEFT_DRIVE_CHANNELS[i]);
     setup(RIGHT_DRIVE_PINS[i], RIGHT_DRIVE_CHANNELS[i]);
 
-    setDriveChannel(1, LEFT_DRIVE_CHANNELS[i]);
-    setDriveChannel(0, RIGHT_DRIVE_CHANNELS[i]);
+    setDriveChannel(i, LEFT_DRIVE_CHANNELS[i]);
+    setDriveChannel(i+3, RIGHT_DRIVE_CHANNELS[i]);
   }
 
   // setup networking stuff
+  // TEST with router 
+  // Ethernet
+  // Manually
+  // 192.168.1.13
+  // 255.255.0.0
+  // 192.168.0.50
   connectToWiFi();
   setupESPServer();
 }
