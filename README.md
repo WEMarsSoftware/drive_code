@@ -1,6 +1,3 @@
-# drive_code
-Somewhat effective rover control code written for an ESP-32 micro-controller.
-
 # Dependencies
  - arduino-esp32 core header files
  - ESPAsyncWebServer library
