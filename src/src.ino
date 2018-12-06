@@ -13,10 +13,8 @@
 
 
 /**
- ESP-32 Pinout:
-
- https://www.google.ca/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwizra7am_zeAhXDlAKHZG_B10QjRx6BAgBEAU&url=https%3A%2F%2Frandomnerdtutorials.com%2Fesp32-pinout-reference-gpios%2F&psig=AOvVaw1LJ9p4gsN-us7aVcxR9u-y&ust=1543670720325832
- *
+ * ESP-32 Pinout:
+ * See drive_code/images
  */
 const int LEFT_DRIVE_CHANNELS[] = {1, 2, 3};
 const int RIGHT_DRIVE_CHANNELS[] = {4, 5, 6};
