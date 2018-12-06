@@ -4,14 +4,15 @@
 #ifndef ELECTRICAL_HH
 #define ELECTRICAL_HH
 
-const int PERCENTAGE_0 = 0;
+const int PERCENTAGE_0 = -100;
 const int PERCENTAGE_100 = 100;
 
-const int MIN_PWM_OUT = 0;
-const int MAX_PWM_OUT = 255;
+// 63 is full reverse, 153 is neutral, 243 is max forwards
+const int MIN_PWM_OUT = 63;
+const int MAX_PWM_OUT = 243;
 
-//const int VICTOR_PWM_IN_FREQUENCY = 400;
-const int VICTOR_PWM_IN_FREQUENCY = 5000;
+const int VICTOR_PWM_IN_FREQUENCY = 400;
+//const int VICTOR_PWM_IN_FREQUENCY = 5000;
 const int DEFAULT_BIT_RESOLUTION = 8;
 
 int leftDriveTrain[] = {-1, -1, -1};
@@ -40,12 +41,12 @@ void setup(int pin, int channel, int freq=VICTOR_PWM_IN_FREQUENCY, int bits=DEFA
  * @param channel - channel to set to left or right
  */ 
 void setDriveChannel(unsigned int pin, int channel) {
- if (pin <= 2) {
-  leftDriveTrain[pin] = channel;
- }
- else if (pin <= 5) {
-  rightDriveTrain[5-pin] = channel;
- }
+  if (pin <= 2) {
+    leftDriveTrain[pin] = channel;
+  }
+  else if (pin <= 5) {
+    rightDriveTrain[5-pin] = channel;
+  }
 }
 
 /**
