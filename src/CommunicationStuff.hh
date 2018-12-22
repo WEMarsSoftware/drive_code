@@ -26,7 +26,6 @@ const char* motor2 = "MOTOR2";
 
 //HTTP GET PARAMS
 const String motorParams[] = {"left-side", "right-side"};
-int motorVoltages[] = {0,0,0,0,0,0};
 
 void inline connectToWiFi()
 {
