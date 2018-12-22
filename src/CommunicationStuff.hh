@@ -7,6 +7,7 @@
 #include <WiFi.h>
 #include "ESPAsyncWebServer.h"
 #include "Electrical.hh"
+#include "ReadSensors.hh"
 
 // INFO FOR LOCAL ROUTER
 char* ssid = "WE MARS Rover";
@@ -29,7 +30,7 @@ const String motorParams[] = {"left-side", "right-side"};
 
 void inline connectToWiFi()
 {
-  // Set WiFi to station mode and disconnect from an AP if it was previously connected
+    // Set WiFi to station mode and disconnect from an AP if it was previously connected
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
     delay(100);
@@ -49,9 +50,9 @@ void inline connectToWiFi()
       Serial.println("Connecting to WiFi..");
     }
 
-  Serial.println("CONNECTED TO " + String(ssid));
-  Serial.println(WiFi.localIP());
-  Serial.println(WiFi.macAddress());
+    Serial.println("CONNECTED TO " + String(ssid));
+    Serial.println(WiFi.localIP());
+    Serial.println(WiFi.macAddress());
 }
 
 void inline setupESPServer()
@@ -85,8 +86,22 @@ void inline setupESPServer()
        moveMotors(left.toInt(), right.toInt());
        
        
+       // send response back with motor current vals
+       // and rotary encoder positions in JSON
+       // TODO: add getRotaryPositions() into ReadSensors.hh
+       // TODO: add results into JSON here
+       int* currentSensors = getCurrentValues(); // is size 6 array
+       String response = "{ \"Motor-Left-0\":\"" + String(currentSensors[0]) 
+                + "\",\"Motor-Left-1\":\"" + String(currentSensors[1])
+                + "\",\"Motor-Left-2\":\"" + String(currentSensors[2])
+                + "\",\"Motor-Right-0\":\"" + String(currentSensors[3])
+                + "\",\"Motor-Right-1\":\"" + String(currentSensors[4])
+                + "\",\"Motor-Right-2\":\"" + String(currentSensors[5]) 
+                + "\"}";
+        request->send(200, "text/plain", response);
+       
        // send success
-       request->send(200, "text/plain", "SUCCESS");
+       // request->send(200, "text/plain", "SUCCESS");
    });
 
   /* Test callback -> test connection without affecting motors */
