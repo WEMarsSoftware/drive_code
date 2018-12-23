@@ -83,4 +83,13 @@ int* inline getCurrentValues() {
 	return currentValues;
 }
 
+/**
+ * Read position signals from 6 rotary encoders on chassis motors.
+ * @return pointer to global array containing results
+ */ 
+int* inline getRotaryPositions() {
+
+}
+
+
 #endif

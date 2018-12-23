@@ -91,12 +91,20 @@ void inline setupESPServer()
        // TODO: add getRotaryPositions() into ReadSensors.hh
        // TODO: add results into JSON here
        int* currentSensors = getCurrentValues(); // is size 6 array
-       String response = "{ \"Motor-Left-0\":\"" + String(currentSensors[0]) 
-                + "\",\"Motor-Left-1\":\"" + String(currentSensors[1])
-                + "\",\"Motor-Left-2\":\"" + String(currentSensors[2])
-                + "\",\"Motor-Right-0\":\"" + String(currentSensors[3])
-                + "\",\"Motor-Right-1\":\"" + String(currentSensors[4])
-                + "\",\"Motor-Right-2\":\"" + String(currentSensors[5]) 
+       int* posVals = getRotaryPositions();
+       String response = "{" 
+                + "\"Current-Left-0\":\"" + String(currentSensors[0]) 
+                + "\",\"Current-Left-1\":\"" + String(currentSensors[1])
+                + "\",\"Current-Left-2\":\"" + String(currentSensors[2])
+                + "\",\"Current-Right-0\":\"" + String(currentSensors[3])
+                + "\",\"Current-Right-1\":\"" + String(currentSensors[4])
+                + "\",\"Current-Right-2\":\"" + String(currentSensors[5])
+                + "\",\"Pos-Left-1\":\"" + String(posVals[0])
+                + "\",\"Pos-Left-1\":\"" + String(posVals[1])
+                + "\",\"Pos-Left-2\":\"" + String(posVals[2])
+                + "\",\"Pos-Right-0\":\"" + String(posVals[3])
+                + "\",\"Pos-Right-1\":\"" + String(posVals[4])
+                + "\",\"Pos-Right-2\":\"" + String(posVals[5]) 
                 + "\"}";
         request->send(200, "text/plain", response);
        
