@@ -13,3 +13,7 @@ Custom API's for setting up and using PWM channels connected to Vex Victor motor
 
 # CommunicationStuff.hh
 Custom HTTP callbacks for interpreting drive commands and paramaters from the control station (see MissionControl repository).
+Code for sending back JSON with sensor data values.
+
+# ReadSensors.hh
+Functions for reading data from current sensors and rotary encoders.
