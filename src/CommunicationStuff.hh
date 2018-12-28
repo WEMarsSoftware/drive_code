@@ -88,9 +88,8 @@ void inline setupESPServer()
        
        // send response back with motor current vals
        // and rotary encoder positions in JSON
-       // TODO: add getRotaryPositions() into ReadSensors.hh
-       // TODO: add results into JSON here
-       int* currentSensors = getCurrentValues(); // is size 6 array
+       // are both size 6 arrays
+       int* currentSensors = getCurrentValues();
        int* posVals = getRotaryPositions();
        String response = "{" 
                 + "\"Current-Left-0\":\"" + String(currentSensors[0]) 
