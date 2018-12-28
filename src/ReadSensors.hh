@@ -67,6 +67,8 @@ void readCurrentVal() {
  * Note: this is supposed to be done with interrupts.. but that doesn't
  * work when WiFi services are running (which is all the time).
  * This will give us some info but won't tell us speed directly.
+ *
+ * Model: US Digital E4T Miniature Optical Kit Encoder
  */
 void readRotaryPos() {
 	updateRotaryMuxSelect();
