@@ -9,7 +9,7 @@
 # Motor Current Sensors
 - Input from 3x8 multiplexer
 	- PIN 35
-- Select pins for multiplexers
+- Select pins for multiplexer
 	- S0: PIN 21 (LSb)
 	- S1: PIN 19
 	- S2: PIN 18 (MSb)
