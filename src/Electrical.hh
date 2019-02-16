@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "esp32-hal-ledc.h"
+#include "PreprocessorOptions.hh"
 
 #ifndef ELECTRICAL_HH
 #define ELECTRICAL_HH
@@ -61,35 +62,31 @@ void setDriveChannel(unsigned int pin, int channel) {
  * Voltages given to ledcWrite should be mapped between 0 and 255
  */ 
 void moveMotors(int left, int right){
-  // Serial.println("MOVING MOTORS");
 
+#ifdef DEBUG
+  Serial.println("MOVING MOTORS");
+#endif
   
 	// (value, fromLow, fromHigh, toLow, toHigh)
 	left = map(left, PERCENTAGE_0, PERCENTAGE_100, MIN_PWM_OUT, MAX_PWM_OUT);
 	right = map(right, PERCENTAGE_0, PERCENTAGE_100, MIN_PWM_OUT, MAX_PWM_OUT);
  
-  // Serial.println(left);
-  // Serial.println(right);
+#ifdef DEBUG
+  Serial.println(left);
+  Serial.println(right);
+#endif
   
 	for (int i = 0; i < MOTORS_PER_SIDE; i++) {
 		ledcWrite(leftDriveTrain[i], left);
 		ledcWrite(rightDriveTrain[i], right);
-   /* Serial.println("Left Channel " + leftDriveTrain[i]);
+
+#ifdef DEBUG
+    Serial.println("Left Channel " + leftDriveTrain[i]);
     Serial.println("Value: " + left);
     Serial.println("Right Channel " + rightDriveTrain[i]);
-    Serial.println("Value: " + right); */
+    Serial.println("Value: " + right);
+#endif
 	}
-
-/*
- * Uncomment if we want to auto turn off motors every second
- * This would be safe regardless of receiving the next ping
- * 
- * delay(1000);
- * for (int i = 0; i < MOTORS_PER_SIDE; i++) {
- *   ledcWrite(leftDriveTrain[i], 0);
- *   ledcWrite(rightDriveTrain[i], 0);
- * }
-*/
 
 }
 

@@ -7,13 +7,19 @@
 #include <WiFi.h>
 #include "ESPAsyncWebServer.h"
 #include "Electrical.hh"
-#include "ReadSensors.hh"
+#include "SensorController.hh"
 
 // INFO FOR LOCAL ROUTER
 char* ssid = "WE MARS Rover";
 const char* password = "westillfirst";
 
 // COMMUNICATION CONSTANTS
+// Testing with router settings:
+//    Ethernet
+//    Manually
+//    192.168.1.13
+//    255.255.0.0
+//    192.168.0.50
 AsyncWebServer server(80);
 IPAddress staticIP(192,168,1,16);
 IPAddress gateway(10,10,10,1);
@@ -27,6 +33,9 @@ const char* motor2 = "MOTOR2";
 
 //HTTP GET PARAMS
 const String motorParams[] = {"left-side", "right-side"};
+
+// incremented on each http connection
+int numPings = 0;
 
 void inline connectToWiFi()
 {
@@ -47,15 +56,20 @@ void inline connectToWiFi()
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
+#ifdef DEBUG
       Serial.println("Connecting to WiFi..");
+#endif
     }
 
+#ifdef DEBUG
     Serial.println("CONNECTED TO " + String(ssid));
     Serial.println(WiFi.localIP());
     Serial.println(WiFi.macAddress());
+#endif
 }
 
-void inline setupESPServer()
+// Note: will be running on Core #1 (the default core)
+void inline setupESPServer(void * args)
 {    
   /**
    * HTTP callback with paramaters
@@ -64,14 +78,14 @@ void inline setupESPServer()
    * https://techtutorialsx.com/2017/12/17/esp32-arduino-http-server-getting-query-parameters/
    */
    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+      numPings++;
       
+      // parse parameters into left and right
       int numParams = request->params();
       String left, right;
-      // Serial.println("PARAM CALLBACK");
       for ( int i = 0; i < numParams; i++ ) {
         AsyncWebParameter* p = request->getParam(i);
         String name = p->name();
-        // Serial.println("Param " + name);
         if (name == motorParams[0]) {
             left = p->value();
         } else if (name == motorParams[1]) {
@@ -80,30 +94,29 @@ void inline setupESPServer()
       }
        
        // if all went well, we now have the two power percentage values
-       // use our Electrical API
-      //  Serial.print("Calling move motors with params " + left);
-       // Serial.println(" " + right);
+       // set motor output signals
        moveMotors(left.toInt(), right.toInt());
        
        
        // send response back with motor current vals
        // and rotary encoder positions in JSON
        // are both size 6 arrays
-       int* currentSensors = getCurrentValues();
-       int* posVals = getRotaryPositions();
-       String response = "{" 
+       int* currentSensors = SensorController::currentValues;
+       int* speedVals = SensorController::speedValues;
+
+       String response = String("{") 
                 + "\"Current-Left-0\":\"" + String(currentSensors[0]) 
                 + "\",\"Current-Left-1\":\"" + String(currentSensors[1])
                 + "\",\"Current-Left-2\":\"" + String(currentSensors[2])
                 + "\",\"Current-Right-0\":\"" + String(currentSensors[3])
                 + "\",\"Current-Right-1\":\"" + String(currentSensors[4])
                 + "\",\"Current-Right-2\":\"" + String(currentSensors[5])
-                + "\",\"Pos-Left-0\":\"" + String(posVals[0])
-                + "\",\"Pos-Left-1\":\"" + String(posVals[1])
-                + "\",\"Pos-Left-2\":\"" + String(posVals[2])
-                + "\",\"Pos-Right-0\":\"" + String(posVals[3])
-                + "\",\"Pos-Right-1\":\"" + String(posVals[4])
-                + "\",\"Pos-Right-2\":\"" + String(posVals[5]) 
+                + "\",\"Speed-Left-0\":\"" + String(speedVals[0])
+                + "\",\"Speed-Left-1\":\"" + String(speedVals[1])
+                + "\",\"Speed-Left-2\":\"" + String(speedVals[2])
+                + "\",\"Speed-Right-0\":\"" + String(speedVals[3])
+                + "\",\"Speed-Right-1\":\"" + String(speedVals[4])
+                + "\",\"Speed-Right-2\":\"" + String(speedVals[5]) 
                 + "\"}";
         request->send(200, "text/plain", response);
        
