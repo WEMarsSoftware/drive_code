@@ -30,6 +30,7 @@ int motorShutdown = 0;
 // POST PARAMETERS
 const char* motor1 = "MOTOR1";
 const char* motor2 = "MOTOR2";
+const int NUM_PARAMS = 2;
 
 //HTTP GET PARAMS
 const String motorParams[] = {"left-side", "right-side"};
@@ -82,6 +83,11 @@ void inline setupESPServer(void * args)
       
       // parse parameters into left and right
       int numParams = request->params();
+      
+      if (numParams != NUM_PARAMS) {
+        request->send(200, "text/plain", "Error: number of paramaters not as expected.");
+      }
+
       String left, right;
       for ( int i = 0; i < numParams; i++ ) {
         AsyncWebParameter* p = request->getParam(i);
