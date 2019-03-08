@@ -1,3 +1,8 @@
+# Running
+- IP of the ESP-32 running this is set constant at 192.168.1.16
+- HTTP GET to http://192.168.1.16/?left-side=<###>&right-side=<###>
+	- the numbers in parameters correspond to "percentage powers" of chassis motors from -100 to +100	
+
 # Dependencies
  - arduino-esp32 core header files
  - ESPAsyncWebServer library
