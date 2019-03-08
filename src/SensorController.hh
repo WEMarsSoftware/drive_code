@@ -54,9 +54,9 @@ int SensorController::speedValues[NUM_CHASSIS_MOTORS] = {};
 RotaryEncoder* SensorController::encoders[NUM_CHASSIS_MOTORS];
 
 // pin assignments temporary
-int SensorController::A_PINS[NUM_CHASSIS_MOTORS] = {1, 2, 3, 4, 5, 6};
-int SensorController::B_PINS[NUM_CHASSIS_MOTORS] = {1, 2, 3, 4, 5, 6};
-int SensorController::CURRENT_IN[NUM_CHASSIS_MOTORS] = {1, 2, 3, 4, 5, 6};
+int SensorController::A_PINS[NUM_CHASSIS_MOTORS] = {13, 12, 14, 27, 26, 25};
+int SensorController::B_PINS[NUM_CHASSIS_MOTORS] = {37, 39, 36, 34, 23, 22};
+int SensorController::CURRENT_IN[NUM_CHASSIS_MOTORS] = {9, 10, 11, 19, 18, 5};
 int SensorController::deltaTicks[NUM_CHASSIS_MOTORS] = {};
 
 // constants
