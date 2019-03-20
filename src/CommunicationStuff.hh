@@ -10,8 +10,8 @@
 #include "SensorController.hh"
 
 // INFO FOR LOCAL ROUTER
-char* ssid = "WE MARS Rover";
-const char* password = "westillfirst";
+char* ssid = "WE-MARS";
+const char* password = "wemars123";
 
 // COMMUNICATION CONSTANTS
 // Testing with router settings:

@@ -32,7 +32,7 @@ int lastPingVal = 0;
 // Stops motors if we lost connection
 void IRAM_ATTR onTimer() {
   portENTER_CRITICAL_ISR(&timerMux);
-  
+  Serial.println("On timer");
   if (lastPingVal == numPings) {
     moveMotors(0, 0); // TURN MOTORS OFF -> WE LOST CONNECTION
   }
@@ -57,29 +57,35 @@ void setup()
   }
 
   // setup networking stuff
-  connectToWiFi();
+  // UNCOMMENT LATER
+  /// ***********************************// 
+  // connectToWiFi();
 
 
   // run WiFi server and control motor PWM outputs (CORE 0 - secondary core)
-  xTaskCreatePinnedToCore(
-            setupESPServer, /* Function */
-            "ServerTask",   /* Name */
-            10000,          /* Stack size */
-            NULL,           /* Parameter of function */
-            0,              /* Priority - 0 since this should override timer and sensor ISR's */
-            &Task1,         /* Task handle */
-            0               /* Core */
-            );  
-
+  
+   /**xTaskCreatePinnedToCore(
+            setupESPServer, // Function 
+            "ServerTask",   // Name 
+            10000,          // Stack size 
+            NULL,           // Parameter of function 
+            1,              // Priority - 0 since this should override timer and sensor ISR's 
+            &Task1,         // Task handle 
+            0               // Core 
+            );**/
+  
+  connectToWiFi();
+  setupESPServer(NULL);
+  
   // timer interrupt to check for connection loss
   // runs once per second
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
-  timerAlarmWrite(timer, 1000000, true);
+  timerAlarmWrite(timer, 2000000, true);
   timerAlarmEnable(timer);
 
   // run sensor ISR on main core
-  SensorController::setupSensors(nullptr);
+   SensorController::setupSensors(nullptr);
 }
 
 void loop() { /* Intentionally empty. Required for Asynchronous Web Server. */ }
