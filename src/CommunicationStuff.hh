@@ -21,8 +21,8 @@ const char* password = "wemars123";
 //    255.255.0.0
 //    192.168.0.50
 AsyncWebServer server(80);
-IPAddress staticIP(192,168,1,16);
-IPAddress gateway(10,10,10,1);
+IPAddress staticIP(192,168,0,100);
+IPAddress gateway(192,168,0,50);
 IPAddress subnet(255,255,255,0);
 
 int motorShutdown = 0;
@@ -45,7 +45,6 @@ void inline connectToWiFi()
     WiFi.disconnect();
     delay(100);
 
-    // ensure our IP is 10.10.10.10
     WiFi.config(staticIP, gateway, subnet);
     
     delay(100);

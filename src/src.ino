@@ -16,8 +16,8 @@
 const int LEFT_DRIVE_CHANNELS[] = {1, 2, 3};
 const int RIGHT_DRIVE_CHANNELS[] = {4, 5, 6};
 
-const int LEFT_DRIVE_PINS[] = {32, 33, 25};
-const int RIGHT_DRIVE_PINS[] = {4, 2, 15};
+const int LEFT_DRIVE_PINS[] = {15, 2, 4};
+const int RIGHT_DRIVE_PINS[] = {16, 17, 5};
 
 const int NUM_MOTORS_PER_SIDE = 3;
 
