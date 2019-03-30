@@ -1,3 +1,10 @@
+/**
+ * src.ino -> main setup and loop
+ * 
+ * Thank you to:
+ * me-no-dev:   https://github.com/me-no-dev/ESPAsyncWebServer
+ */
+ 
 #include <WiFi.h>
 #include "ESPAsyncWebServer.h"
 #include "CommunicationStuff.hh"
@@ -9,8 +16,8 @@
 const int LEFT_DRIVE_CHANNELS[] = {1, 2, 3};
 const int RIGHT_DRIVE_CHANNELS[] = {4, 5, 6};
 
-const int LEFT_DRIVE_PINS[] = {15, 2, 4};
-const int RIGHT_DRIVE_PINS[] = {16, 17, 5};
+const int LEFT_DRIVE_PINS[] = {32, 33, 25};
+const int RIGHT_DRIVE_PINS[] = {4, 2, 15};
 
 const int NUM_MOTORS_PER_SIDE = 3;
 
@@ -25,11 +32,7 @@ int lastPingVal = 0;
 // Stops motors if we lost connection
 void IRAM_ATTR onTimer() {
   portENTER_CRITICAL_ISR(&timerMux);
-  
-#ifdef DEBUG
   Serial.println("On timer");
-#endif
-  
   if (lastPingVal == numPings) {
     moveMotors(0, 0); // TURN MOTORS OFF -> WE LOST CONNECTION
   }
@@ -52,6 +55,12 @@ void setup()
     setDriveChannel(i, LEFT_DRIVE_CHANNELS[i]);
     setDriveChannel(i+3, RIGHT_DRIVE_CHANNELS[i]);
   }
+
+  // setup networking stuff
+  // UNCOMMENT LATER
+  /// ***********************************// 
+  // connectToWiFi();
+
 
   // run WiFi server and control motor PWM outputs (CORE 0 - secondary core)
   

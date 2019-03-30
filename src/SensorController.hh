@@ -3,7 +3,6 @@
 #ifndef SENSOR_CONTROLLER
 #define SENSOR_CONTROLLER
 
-
 #include "Arduino.h"
 #include "RotaryEncoder.h"
 #include "SPI.h"
@@ -18,7 +17,7 @@ const int NUM_CHASSIS_MOTORS = 6;
 
 const int MAX_CURRENT_IN = 33;
 
-static const int spiClk = 1000000; // 1 MHz
+const int spiClk = 1000000; // 1 MHz
 
 //uninitalised pointers to SPI objects
 SPIClass * vspi = NULL;
@@ -43,32 +42,32 @@ public:
 	static int CURRENT_IN[NUM_CHASSIS_MOTORS];
 
   // SPI constants
-  const int HSPI_CLK = 14;
-  const int HSPI_MISO = 12;
-  const int HSPI_MOSI = 13;
-  const int HSPI_CS_CURR = 1;
-  const int HSPI_CS_IO = 3;
+  static const int HSPI_CLK;
+  static const int HSPI_MISO;
+  static const int HSPI_MOSI;
+  static const int HSPI_CS_CURR;
+  static const int HSPI_CS_IO;
   
-  const int VSPI_CLK = 18;
-  const int VSPI_MISO = 19;
-  const int VSPI_MOSI = 23;
-  const int VSPI_CS_POT = 26;
-  const int VSPI_EOC_POT = 27;
+  static const int VSPI_CLK;
+  static const int VSPI_MISO;
+  static const int VSPI_MOSI;
+  static const int VSPI_CS_POT;
+  static const int VSPI_EOC_POT;
 
-  const int CAN_R = 22;
-  const int CAN_D = 21;
+  static const int CAN_R;
+  static const int CAN_D;
   
 	// constants
-  	static const int CORE_LOOP_DELAY;
-  	static const int ENCODER_TIME;
-  //	static const int NUM_CHASSIS_MOTORS = 6;
+  static const int CORE_LOOP_DELAY;
+  static const int ENCODER_TIME;
 
-	// main loop to update data points
-	// infinite -> process ends with a power off of rover
+	// main infinite loop to update data points
 	static void sensorsCoreLoop();
 
 	// attach encoders to pins
 	static void setupSensors(void* args);
+  static void vspiCommand();
+  static void hspiCommand();
 };
 
 // link statics
@@ -79,13 +78,28 @@ RotaryEncoder* SensorController::encoders[NUM_CHASSIS_MOTORS];
 // pin assignments temporary
 int SensorController::A_PINS[NUM_CHASSIS_MOTORS] = {36, 34, 32, 25, 26, 19};
 int SensorController::B_PINS[NUM_CHASSIS_MOTORS] = {39, 35, 33, 23, 27, 18};
-//int SensorController::CURRENT_IN[NUM_CHASSIS_MOTORS] = {9, 10, 11, 19, 18, 5};
+int SensorController::CURRENT_IN[NUM_CHASSIS_MOTORS] = {9, 10, 11, 19, 18, 5};
 int SensorController::deltaTicks[NUM_CHASSIS_MOTORS] = {};
+
+// SPI constants
+const int HSPI_CLK = 14;
+const int HSPI_MISO = 12;
+const int HSPI_MOSI = 13;
+const int HSPI_CS_CURR = 1;
+const int HSPI_CS_IO = 3;
+
+const int VSPI_CLK = 18;
+const int VSPI_MISO = 19;
+const int VSPI_MOSI = 23;
+const int VSPI_CS_POT = 26;
+const int VSPI_EOC_POT = 27;
+
+const int CAN_R = 22;
+const int CAN_D = 21;
 
 // constants
 const int SensorController::CORE_LOOP_DELAY = 10;
 const int SensorController::ENCODER_TIME = 1000;
-//const int SensorController::NUM_CHASSIS_MOTORS = 6;
 
 // temp array for reading encoder ticks
 int deltaTicks[NUM_CHASSIS_MOTORS] = {};
@@ -94,11 +108,9 @@ const int ENCODER_TIME = 1000;
 
 void SensorController::sensorsCoreLoop()
 {
-	// volatile so this isn't optimized away
-	/*volatile unsigned int a = 1;
-
-	while (a)
+	while (true)
 	{
+  /*
 		// update encoder and current sensor data
 		for (int i = 0; i < NUM_CHASSIS_MOTORS; i++)
 		{
@@ -107,8 +119,11 @@ void SensorController::sensorsCoreLoop()
 
 			currentValues[i] = analogRead(CURRENT_IN[i]);
 		}
+   */
+    vspiCommand();
+    hspiCommand();
 		delay(CORE_LOOP_DELAY);
-  	} */
+  } 
 }
 
 void SensorController::setupSensors(void* args)
@@ -125,54 +140,40 @@ void SensorController::setupSensors(void* args)
   
   //clock miso mosi ss
 
-  //initialise vspi with default pins
-  //SCLK = 18, MISO = 19, MOSI = 23, SS = 5
-  vspi->begin();
-  //alternatively route through GPIO pins of your choice
-  //hspi->begin(0, 2, 4, 33); //SCLK, MISO, MOSI, SS
-  
-  //initialise hspi with default pins
-  //SCLK = 14, MISO = 12, MOSI = 13, SS = 15
-  hspi->begin(); 
-  //alternatively route through GPIO pins
-  //hspi->begin(25, 26, 27, 32); //SCLK, MISO, MOSI, SS
+  //initialise
+  vspi->begin(VSPI_CLK, VSPI_MISO, VSPI_MOSI, VSPI_CS_POT);
+  vspi->setHwCs(false);
+  hspi->begin(HSPI_CLK, HSPI_MISO, HSPI_MOSI, HSPI_CS_CURR);
+  hspi->setHwCs(false);
 
-  //set up slave select pins as outputs as the Arduino API
-  //doesn't handle automatically pulling SS low
-  pinMode(5, OUTPUT); //VSPI SS
-  pinMode(15, OUTPUT); //HSPI SS
+  //set up slave select pins as outputs
+  pinMode(VSPI_CS_POT, OUTPUT);
+  pinMode(HSPI_CS_CURR, OUTPUT);
+  pinMode(HSPI_CS_IO, OUTPUT);
   
 	// don't let this task end
 	sensorsCoreLoop();
 }
 
 
-// the loop function runs over and over again until power down or reset
-void loop() {
-  //use the SPI buses
-  vspiCommand();
-  hspiCommand();
-  delay(100);
-}
-
-void vspiCommand() {
+void SensorController::vspiCommand() {
   byte data = 0b01010101; // junk data to illustrate usage
 
   //use it as you would the regular arduino SPI API
   vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-  digitalWrite(5, LOW); //pull SS slow to prep other end for transfer
+  digitalWrite(VSPI_CS_POT, LOW); //pull SS slow to prep other end for transfer
   vspi->transfer(data);  
-  digitalWrite(5, HIGH); //pull ss high to signify end of data transfer
+  digitalWrite(VSPI_CS_POT, HIGH); //pull ss high to signify end of data transfer
   vspi->endTransaction();
 }
 
-void hspiCommand() {
+void SensorController::hspiCommand() {
   byte stuff = 0b11001100;
   
   hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-  digitalWrite(15, LOW);
+  digitalWrite(HSPI_CS_CURR, LOW);
   hspi->transfer(stuff);
-  digitalWrite(15, HIGH);
+  digitalWrite(HSPI_CS_CURR, HIGH);
   hspi->endTransaction();
 }
 
