@@ -98,24 +98,21 @@ void inline setupESPServer(void * args)
        
        
        // send response back with motor current vals
-       // and rotary encoder positions in JSON
+       // and pot positions in JSON
        // are both size 6 arrays
-       int* currentSensors = SensorController::currentValues;
-       int* speedVals = SensorController::speedValues;
-
        String response = String("{") 
-                + "\"Current-Left-0\":\"" + String(currentSensors[0]) 
-                + "\",\"Current-Left-1\":\"" + String(currentSensors[1])
-                + "\",\"Current-Left-2\":\"" + String(currentSensors[2])
-                + "\",\"Current-Right-0\":\"" + String(currentSensors[3])
-                + "\",\"Current-Right-1\":\"" + String(currentSensors[4])
-                + "\",\"Current-Right-2\":\"" + String(currentSensors[5])
-                + "\",\"Speed-Left-0\":\"" + String(speedVals[0])
-                + "\",\"Speed-Left-1\":\"" + String(speedVals[1])
-                + "\",\"Speed-Left-2\":\"" + String(speedVals[2])
-                + "\",\"Speed-Right-0\":\"" + String(speedVals[3])
-                + "\",\"Speed-Right-1\":\"" + String(speedVals[4])
-                + "\",\"Speed-Right-2\":\"" + String(speedVals[5]) 
+                + "\"Current-Left-0\":\"" + String(SensorController::currentValues[0]) 
+                + "\",\"Current-Left-1\":\"" + String(SensorController::currentValues[1])
+                + "\",\"Current-Left-2\":\"" + String(SensorController::currentValues[2])
+                + "\",\"Current-Right-0\":\"" + String(SensorController::currentValues[3])
+                + "\",\"Current-Right-1\":\"" + String(SensorController::currentValues[4])
+                + "\",\"Current-Right-2\":\"" + String(SensorController::currentValues[5])
+                + "\",\"Speed-Left-0\":\"" + String(SensorController::potVals[0])
+                + "\",\"Speed-Left-1\":\"" + String(SensorController::potVals[1])
+                + "\",\"Speed-Left-2\":\"" + String(SensorController::potVals[2])
+                + "\",\"Speed-Right-0\":\"" + String(SensorController::potVals[3])
+                + "\",\"Speed-Right-1\":\"" + String(SensorController::potVals[4])
+                + "\",\"Speed-Right-2\":\"" + String(SensorController::potVals[5]) 
                 + "\"}";
         request->send(200, "text/plain", response);
    });

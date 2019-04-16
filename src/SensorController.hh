@@ -35,7 +35,8 @@ public:
 	// specified in constructor (last parameter in microseconds)
 	static RotaryEncoder* encoders[NUM_CHASSIS_MOTORS];
 	static int deltaTicks[NUM_CHASSIS_MOTORS];
-
+  static int potVals[NUM_CHASSIS_MOTORS];
+  
 	// pin assignments
 	static int A_PINS[NUM_CHASSIS_MOTORS];
 	static int B_PINS[NUM_CHASSIS_MOTORS];
@@ -73,6 +74,7 @@ public:
 // link statics
 int SensorController::currentValues[NUM_CHASSIS_MOTORS] = {};
 int SensorController::speedValues[NUM_CHASSIS_MOTORS] = {};
+int SensorController::potVals[NUM_CHASSIS_MOTORS] = {};
 RotaryEncoder* SensorController::encoders[NUM_CHASSIS_MOTORS];
 
 // pin assignments temporary
@@ -82,20 +84,20 @@ int SensorController::CURRENT_IN[NUM_CHASSIS_MOTORS] = {9, 10, 11, 19, 18, 5};
 int SensorController::deltaTicks[NUM_CHASSIS_MOTORS] = {};
 
 // SPI constants
-const int HSPI_CLK = 14;
-const int HSPI_MISO = 12;
-const int HSPI_MOSI = 13;
-const int HSPI_CS_CURR = 1;
-const int HSPI_CS_IO = 3;
+const int SensorController::HSPI_CLK = 14;
+const int SensorController::HSPI_MISO = 12;
+const int SensorController::HSPI_MOSI = 13;
+const int SensorController::HSPI_CS_CURR = 1;
+const int SensorController::HSPI_CS_IO = 3;
 
-const int VSPI_CLK = 18;
-const int VSPI_MISO = 19;
-const int VSPI_MOSI = 23;
-const int VSPI_CS_POT = 26;
-const int VSPI_EOC_POT = 27;
+const int SensorController::VSPI_CLK = 18;
+const int SensorController::VSPI_MISO = 19;
+const int SensorController::VSPI_MOSI = 23;
+const int SensorController::VSPI_CS_POT = 26;
+const int SensorController::VSPI_EOC_POT = 27;
 
-const int CAN_R = 22;
-const int CAN_D = 21;
+const int SensorController::CAN_R = 22;
+const int SensorController::CAN_D = 21;
 
 // constants
 const int SensorController::CORE_LOOP_DELAY = 10;
@@ -134,13 +136,13 @@ void SensorController::setupSensors(void* args)
 		//encoders[i] = new RotaryEncoder(A_PINS[i], B_PINS[i], 1, 1, ENCODER_TIME);
 	}*/
 
-   //initialise two instances of the SPIClass attached to VSPI and HSPI respectively
+   // initialise two instances of the SPIClass attached to VSPI and HSPI respectively
   vspi = new SPIClass(VSPI);
   hspi = new SPIClass(HSPI);
   
-  //clock miso mosi ss
+  // clock miso mosi ss
 
-  //initialise
+  // initialise
   vspi->begin(VSPI_CLK, VSPI_MISO, VSPI_MOSI, VSPI_CS_POT);
   vspi->setHwCs(false);
   hspi->begin(HSPI_CLK, HSPI_MISO, HSPI_MOSI, HSPI_CS_CURR);
@@ -156,25 +158,43 @@ void SensorController::setupSensors(void* args)
 }
 
 
+// Update data from pots
 void SensorController::vspiCommand() {
-  byte data = 0b01010101; // junk data to illustrate usage
+  byte address = 0; // junk data to illustrate usage
 
-  //use it as you would the regular arduino SPI API
-  vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-  digitalWrite(VSPI_CS_POT, LOW); //pull SS slow to prep other end for transfer
-  vspi->transfer(data);  
-  digitalWrite(VSPI_CS_POT, HIGH); //pull ss high to signify end of data transfer
-  vspi->endTransaction();
+  // query MAX11628EEE ADC for 8 channels of data
+  for (; address < NUM_CHASSIS_MOTORS; address++) {
+    
+    vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
+    digitalWrite(VSPI_CS_POT, LOW); // select chip
+ 
+    vspi->transfer(address);  
+
+    // see this thread about reading returned value http://forum.arduino.cc/index.php?topic=260836.0
+    byte returnedValue = vspi->transfer(0);
+    potVals[address] = (int)returnedValue;
+    
+    digitalWrite(VSPI_CS_POT, HIGH); // signal end of transfer
+    vspi->endTransaction();
+    
+  }
 }
 
+// Update data from current sensors
 void SensorController::hspiCommand() {
-  byte stuff = 0b11001100;
-  
-  hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-  digitalWrite(HSPI_CS_CURR, LOW);
-  hspi->transfer(stuff);
-  digitalWrite(HSPI_CS_CURR, HIGH);
-  hspi->endTransaction();
+  byte address = 0;
+  for (; address < NUM_CHASSIS_MOTORS; address++) {  
+    hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
+    digitalWrite(HSPI_CS_CURR, LOW);
+    hspi->transfer(address);
+
+    // see this thread about reading returned value http://forum.arduino.cc/index.php?topic=260836.0
+    byte retVal = hspi->transfer(0);
+    currentValues[address]= (int)retVal;
+
+    digitalWrite(HSPI_CS_CURR, HIGH);
+    hspi->endTransaction();
+  }
 }
 
 #endif
